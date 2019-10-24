@@ -4,75 +4,91 @@ Count frequencies dictionary by the given arbitrary text
 """ 
 
 def calculate_frequences(text: str) -> dict:
-    frequency_dict = {}
-    if type(text) == str:
-        text = text.lower()
-        text = text.replace('\n', ' ')
-        signs = """1234567890!@#$%^&"*()_+-=|/.,?':;><[]{}~`"""
-        clean_text = ''
-        for s in text:
-            if s not in signs:
-                clean_text += s
-        all_words = clean_text.split(' ')
-        for el in all_words:
-            if el not in frequency_dict:
-                if el != '':
-                    frequency_dict[el] = all_words.count(el)
-    return frequency_dict
+    """
+    Calculates number of times each word appears in the text
+    """
+    frequencies = {}
+    new_text = ''
+    if text is None:
+        return frequencies
+    if not isinstance(text, str):
+        text = str(text)
+    for symbol in text:
+        if symbol.isalpha() or symbol == ' ':
+            new_text += symbol
+    new_text = new_text.lower()
+    words = new_text.split()
+    for key in words:
+        key = key.lower()
+        if key in frequencies:
+            value = frequencies[key]
+            frequencies[key] = value + 1
+        else:
+            frequencies[key] = 1
+    return frequencies
+
 
 def filter_stop_words(frequencies: dict, stop_words: tuple) -> dict:
-    clean_dict = {}
-    if type(stop_words) == tuple and type(frequencies) == dict:
-        for key in frequencies.keys():
-            if key not in stop_words:
-                if type(key) == str:
-                    if key != '':
-                        clean_dict[key] = frequencies[key]
-    return clean_dict   
+    """
+    Removes all stop words from the given frequencies dictionary
+    """
+    if frequencies is None:
+        frequencies = {}
+        return frequencies
+    for word in list(frequencies):
+        if not isinstance(word, str):
+            del frequencies[word]
+    if not isinstance(stop_words, tuple):
+        return frequencies
+    for word in stop_words:
+        if not isinstance(word, str):
+            continue
+        if frequencies.get(word) is not None:
+            del frequencies[word]
+    return frequencies
+
 
 def get_top_n(frequencies: dict, top_n: int) -> tuple:
-    if type(top_n) != int:
+    """
+    Takes first N popular words
+    :param
+    """
+    if not isinstance(top_n, int):
+        frequencies = ()
+        return frequencies
+    if top_n < 0:
         top_n = 0
-    elif top_n < 0:
-        top_n = 0
-    top_of_words = ()
-    if type(frequencies) == dict:
-        if top_n > len(frequencies):
-            top_n = len(frequencies)
-        for n in range (top_n):
-            more = 0
-            its_name = ''
-            for key, value in frequencies.items():
-                if value > more:
-                    more = value
-                    its_name = key
-            frequencies.pop(its_name)
-            top_of_words += ((its_name),)
-    return top_of_words
+    elif top_n > len(frequencies):
+        top_n = len(frequencies)
+    top_words = sorted(frequencies, key=lambda x: int(frequencies[x]), reverse=True)
+    best = tuple(top_words[:top_n])
+    return best
 
 
-text_file = '''Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, 
-there live the #blind #texts.
+def read_from_file(path_to_file: str, lines_limit: int) -> str:
+    """
+    Read text from file
+    """
+    file = open(path_to_file)
+    counter = 0
+    text = ''
+    if file is None:
+        return text
+    for line in file:
+        text += line
+        counter += 1
+        if counter == lines_limit:
+            break
+    file.close()
+    return text
 
-Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. 
-A small river named Duden 19788 flows by their place and supplies it with the necessary regelialia.
 
-It is a paradisematic country, in which roasted parts of sentences fly into your mouth.
-
-Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic 
-life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far 
-World of Grammar.
-
-The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question 
-Marks and !devious! Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, 
-put her initial into the belt and made herself on the way./.*./
-
-When she reached the first hills of the :) Italic Mountains, she had a last view back on the skyline of 
-her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. 
-Pityful a rethoric question ran over her cheek, then :);'''
-number = 3
-words_to_stop = ('but', 'and', 'the', 'of', 'a', 'with', 6, False, '')
-
-dicty = calculate_frequences(text_file)
-clean_dicty = filter_stop_words(dicty, words_to_stop)
-top_tuple = get_top_n(clean_dicty, number)
+def write_to_file(path_to_file: str, content: tuple):
+    """
+    Creates new file
+    """
+    file = open(path_to_file, 'w')
+    for i in content:
+        file.write(i)
+        file.write('\n')
+    file.close()
