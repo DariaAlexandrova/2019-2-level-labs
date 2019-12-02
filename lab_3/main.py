@@ -51,10 +51,10 @@ class WordStorage:
 
 
 class NGramTrie:
-    def __init__(self, number):
+    def __init__(self, num):
         self.gram_frequencies = {}
         self.gram_log_probabilities = {}
-        self.size = number
+        self.size = num
 
     def fill_from_sentence(self, sentence: tuple) -> str:
         if type(sentence) != tuple or sentence == '':
@@ -98,8 +98,8 @@ class NGramTrie:
                 if prefix == key[0:len(key) - 1]:
                     the_popular.append((value, key))
             the_popular.sort(reverse=True)
-            sentence.append(the_popular[0][0][-1])
-            prefix = the_popular[0][0][1:]
+            sentence.append(the_popular[0][1][-1])
+            prefix = the_popular[0][1][1:]
         return sentence
 
 
