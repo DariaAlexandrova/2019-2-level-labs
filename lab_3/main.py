@@ -27,7 +27,7 @@ class WordStorage:
 
     def get_id_of(self, word: str) -> int:
         if type(word) == str:
-            if word not in self.storage:
+            if word in self.storage:
                 return self.storage[word]
             else:
                 return -1
@@ -113,9 +113,8 @@ def encode(storage_instance, corpus) -> list:
     return coded_corpus
 
 
-
 def split_by_sentence(text: str) -> list:
-        if type(text) != str or text == '' or '.' not in text:
+    if type(text) != str or text == '' or '.' not in text:
         return []
     text = text.replace('!', '.')
     text = text.replace('?', '.')
@@ -131,7 +130,7 @@ def split_by_sentence(text: str) -> list:
             new_sent = ['<s>']
             words = clear_sentence.split()
             new_sent.extend(words)
-            new_sent.append('</s')
+            new_sent.append('</s>')
             clear_sentences.append(new_sent)
     return clear_sentences
 
